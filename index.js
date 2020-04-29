@@ -32,3 +32,10 @@ app.get('/customers/add', function (req, res) {
     customers.push(tempCust);
     res.send(tempCust)
 })
+
+app.get('/customer/:id', function (req, res) {
+    let custId=req.params.id;
+    console.log("fetch details for custID:"+custId);
+
+    res.send(customers.filter((cust)=>cust.customerID==custId))
+})
