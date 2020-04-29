@@ -21,3 +21,14 @@ app.get('/', function (req, res) {
 app.get('/customers', function (req, res) {
     res.send(customers)
 })
+
+app.get('/customers/add', function (req, res) {
+    let tempCust={
+        name:'ap',
+        contactNo:Math.floor((Math.random() * 100) + 900000),
+        gender:'Male',
+        customerID:Math.floor((Math.random() * 100) + 4000)
+    }
+    customers.push(tempCust);
+    res.send(tempCust)
+})
