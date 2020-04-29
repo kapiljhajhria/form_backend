@@ -36,6 +36,18 @@ app.get('/customers/add', function (req, res) {
 app.get('/customer/:id', function (req, res) {
     let custId=req.params.id;
     console.log("fetch details for custID:"+custId);
-
     res.send(customers.filter((cust)=>cust.customerID==custId))
+})
+
+app.get('/customer/delete/:id', function (req, res) {
+    let custId=req.params.id;
+    console.log("deleting custID:"+custId);
+    let newCustomers=customers.filter((cust)=>cust.customerID!=custId)
+    if(newCustomers.length!==customers.length){
+        customers=newCustomers;
+        res.send({status:"deleted",customerId:custId})
+    }else{
+        res.send({status:"Not Deleted",customerId:custId})
+    }
+
 })
