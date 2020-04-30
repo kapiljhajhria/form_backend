@@ -52,6 +52,18 @@ app.post('/', function (req, res) {
     res.send({"customerID":tempCustId})
 })
 
+app.post('/deleteCustomer', function (req, res) {
+    console.log("got post request to delete customer : " +req.body.customerID);
+    console.log(req.body);
+    let tempCustId=req.body.customerID;
+    let newCustomers=customers.filter((cust)=>cust.custId!=tempCustId)
+    if(newCustomers.length!==customers.length){
+        customers=newCustomers;
+        res.send({status:"deleted",customerId:tempCustId})
+    }else{
+        res.send({status:"Not Deleted",customerId:tempCustId})
+    }
+})
 
 app.get('/customer/add', function (req, res) {
     let tempCust={
