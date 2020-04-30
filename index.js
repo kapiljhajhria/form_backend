@@ -1,13 +1,16 @@
 const express =require('express');
 const app =express();
-
+const bodyParser     =        require("body-parser");
 const port=5000;
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 customer={
     name:'kapil',
-    contactNo:'9812345678',
+    contact:'98123456',
     gender:'Male',
-    customerID:4212
+    custId:4212
 }
 let customers=[customer];
 
@@ -33,13 +36,29 @@ app.get('/', function (req, res) {
 app.get('/customers', function (req, res) {
     res.send(customers)
 })
+//handling post request to server
 
-app.get('/customers/add', function (req, res) {
+app.post('/', function (req, res) {
+    console.log("got post request");
+    console.log(req.body);
+    let tempCustId=Math.floor((Math.random() * 100) + 4000);
+    let tempCust={
+        name:req.body.name,
+        contact:req.body.contact,
+        gender:req.body.gender,
+        custId:tempCustId
+    }
+    customers.push(tempCust);
+    res.send({"customerID":tempCustId})
+})
+
+
+app.get('/customer/add', function (req, res) {
     let tempCust={
         name:'ap',
-        contactNo:Math.floor((Math.random() * 100) + 900000),
+        contact:Math.floor((Math.random() * 100) + 900000),
         gender:'Male',
-        customerID:Math.floor((Math.random() * 100) + 4000)
+        custId:Math.floor((Math.random() * 100) + 4000)
     }
     customers.push(tempCust);
     res.send(tempCust)
@@ -48,13 +67,13 @@ app.get('/customers/add', function (req, res) {
 app.get('/customer/:id', function (req, res) {
     let custId=req.params.id;
     console.log("fetch details for custID:"+custId);
-    res.send(customers.filter((cust)=>cust.customerID==custId))
+    res.send(customers.filter((cust)=>cust.custId==custId))
 })
 
 app.get('/customer/delete/:id', function (req, res) {
     let custId=req.params.id;
     console.log("deleting custID:"+custId);
-    let newCustomers=customers.filter((cust)=>cust.customerID!=custId)
+    let newCustomers=customers.filter((cust)=>cust.custId!=custId)
     if(newCustomers.length!==customers.length){
         customers=newCustomers;
         res.send({status:"deleted",customerId:custId})
