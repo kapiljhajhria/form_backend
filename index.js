@@ -10,7 +10,7 @@ customer={
     name:'kapil',
     contact:'98123456',
     gender:'Male',
-    custId:4212
+    customerID:4212
 }
 let customers=[customer];
 
@@ -41,27 +41,27 @@ app.get('/customers', function (req, res) {
 app.post('/', function (req, res) {
     console.log("got post request");
     console.log(req.body);
-    let tempCustId=Math.floor((Math.random() * 100) + 4000);
+    let tempcustomerID=Math.floor((Math.random() * 100) + 4000);
     let tempCust={
         name:req.body.name,
         contact:req.body.contact,
         gender:req.body.gender,
-        custId:tempCustId
+        customerID:tempcustomerID
     }
     customers.push(tempCust);
-    res.send({"customerID":tempCustId})
+    res.send({"customerID":tempcustomerID})
 })
 
 app.post('/deleteCustomer', function (req, res) {
     console.log("got post request to delete customer : " +req.body.customerID);
     console.log(req.body);
-    let tempCustId=req.body.customerID;
-    let newCustomers=customers.filter((cust)=>cust.custId!=tempCustId)
+    let tempcustomerID=req.body.customerID;
+    let newCustomers=customers.filter((cust)=>cust.customerID!=tempcustomerID)
     if(newCustomers.length!==customers.length){
         customers=newCustomers;
-        res.send({status:"deleted",customerId:tempCustId})
+        res.send({status:"deleted",customerID:tempcustomerID})
     }else{
-        res.send({status:"Not Deleted",customerId:tempCustId})
+        res.send({status:"Not Deleted",customerID:tempcustomerID})
     }
 })
 
@@ -70,27 +70,27 @@ app.get('/customer/add', function (req, res) {
         name:'ap',
         contact:Math.floor((Math.random() * 100) + 900000),
         gender:'Male',
-        custId:Math.floor((Math.random() * 100) + 4000)
+        customerID:Math.floor((Math.random() * 100) + 4000)
     }
     customers.push(tempCust);
     res.send(tempCust)
 })
 
 app.get('/customer/:id', function (req, res) {
-    let custId=req.params.id;
-    console.log("fetch details for custID:"+custId);
-    res.send(customers.filter((cust)=>cust.custId==custId))
+    let customerID=req.params.id;
+    console.log("fetch details for customerID:"+customerID);
+    res.send(customers.filter((cust)=>cust.customerID==customerID))
 })
 
 app.get('/customer/delete/:id', function (req, res) {
-    let custId=req.params.id;
-    console.log("deleting custID:"+custId);
-    let newCustomers=customers.filter((cust)=>cust.custId!=custId)
+    let customerID=req.params.id;
+    console.log("deleting customerID:"+customerID);
+    let newCustomers=customers.filter((cust)=>cust.customerID!=customerID)
     if(newCustomers.length!==customers.length){
         customers=newCustomers;
-        res.send({status:"deleted",customerId:custId})
+        res.send({status:"deleted",customerId:customerID})
     }else{
-        res.send({status:"Not Deleted",customerId:custId})
+        res.send({status:"Not Deleted",customerId:customerID})
     }
 
 })
