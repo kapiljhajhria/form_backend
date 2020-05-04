@@ -6,6 +6,26 @@ const port = 5000;
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+
+// Connection URL
+const url = 'mongodb+srv://kapil:aspace@cluster0-84mgq.mongodb.net/test?retryWrites=true&w=majority';
+
+// Database Name
+const dbName = 'myproject';
+
+// Use connect method to connect to the server
+MongoClient.connect(url, function(err, client) {
+    assert.equal(null, err);
+    console.log(err)
+    console.log("Connected successfully to server");
+
+    const db = client.db("forms");
+
+    client.close();
+});
 customer = {
     name: 'kapil',
     contact: '98123456',
