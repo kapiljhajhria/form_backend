@@ -1,4 +1,5 @@
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 const assert = require('assert');
 
 // Connection URL
@@ -33,7 +34,7 @@ customer = {
     gender: 'Male',
     customerID: 4212
 }
-let customers = [customer];
+let customers = [];
 let deleteCustomers = [];
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -57,57 +58,55 @@ app.get('/', function (req, res) {
     res.send('hello world')
 })
 app.get('/customers', async function  (req, res) {
-    let collectionData=await dbClient.db('forms').collection('customers').find().toArray();
+    let collectionData=await dbClient.db('forms').collection('customers').find({"active":true}).toArray();
     res.send(collectionData)
 })
-app.get('/deletedCustomers', function (req, res) {
-    res.send(deleteCustomers.map((delCust) => delCust[0]))
-})
+
 //handling post request to
 
-app.post('/', function (req, res) {
+app.post('/', async function (req, res) {
     console.log("got post request");
     console.log(req.body);
     let tempcustomerID = Math.floor((Math.random() * 100) + 4000);
     let tempCust = {
+        active:true,
         name: req.body.name,
         contact: req.body.contact,
         gender: req.body.gender,
         customerID: tempcustomerID
     }
     customers.push(tempCust);
-    res.send({"customerID": tempcustomerID})
+    let result=await dbClient.db('forms').collection('customers').insertOne(tempCust);
+    // console.log(result.ops)
+    res.send(result.ops[0])
 })
 
-app.post('/deleteCustomer', function (req, res) {
+app.post('/deleteCustomer', async function (req, res) {
     console.log("got post request to delete customer : " + req.body.customerID);
     console.log(req.body);
     let tempcustomerID = req.body.customerID;
-    let deletedCustIndex = req.body.index;
-    deleteCustomers.push([customers.filter((cust) => cust.customerID == tempcustomerID)[0], deletedCustIndex, new Date().getTime()])
-    let newCustomers = customers.filter((cust) => cust.customerID != tempcustomerID)
-    if (newCustomers.length !== customers.length) {
-        customers = newCustomers;
+    let result=await dbClient.db('forms').collection('customers').updateOne({"_id":ObjectId(tempcustomerID)},{$set:{active:false}});
+    if (result.deletedCount===1) {
         res.send({status: "deleted", customerID: tempcustomerID})
     } else {
         res.send({status: "Not Deleted", customerID: tempcustomerID})
     }
 })
-app.post('/undoDelete', function (req, res) {
+app.post('/undoDelete', async function (req, res) {
     console.log("got post request to delete customer : " + req.body.customerID);
     console.log(req.body);
     let tempcustomerID = req.body.customerID;
-    let custData = deleteCustomers.filter((cust) => cust[0].customerID == tempcustomerID)[0];
-    customers.push(custData[0])
-    if (custData.length !== 0) {
-        res.send({status: 'Found', deletedCustomer: custData[0], deletedCustomerIndex: custData[1]})
-    } else {
-        res.send({status: "notFound",})
-    }
+    let result=await dbClient.db('forms').collection('customers').updateOne({"_id":ObjectId(tempcustomerID)},{$set:{active:true}});
+    // if (custData.length !== 0) {
+    //     res.send({status: 'Found', deletedCustomer: custData[0], deletedCustomerIndex: custData[1]})
+    // } else {
+    //     res.send({status: "notFound",})
+    // }
 })
 
 app.get('/customer/add', function (req, res) {
     let tempCust = {
+        active:true,
         name: 'ap',
         contact: Math.floor((Math.random() * 100) + 900000),
         gender: 'Male',
