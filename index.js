@@ -1,12 +1,3 @@
-const express = require('express');
-const app = express();
-const bodyParser = require("body-parser");
-const port = 5000;
-
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-
-
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
@@ -15,17 +6,27 @@ const url = 'mongodb+srv://kapil:aspace@cluster0-84mgq.mongodb.net/test?retryWri
 
 // Database Name
 const dbName = 'myproject';
+let dbClient;
+
+
+const express = require('express');
+const app = express();
+const bodyParser = require("body-parser");
+const port = 5000;
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+async function listDatabases(client){
+    databasesList = await client.db().admin().listDatabases();
+
+    console.log("Databases:");
+    databasesList.databases.forEach(db => console.log(` - ${db.name}`));
+};
+
 
 // Use connect method to connect to the server
-MongoClient.connect(url, function(err, client) {
-    assert.equal(null, err);
-    console.log(err)
-    console.log("Connected successfully to server");
 
-    const db = client.db("forms");
-
-    client.close();
-});
 customer = {
     name: 'kapil',
     contact: '98123456',
@@ -46,20 +47,23 @@ app.use((req, res, next) => {
 });
 
 
-app.listen(port, () => {
+app.listen(port, async () => {
+   dbClient = await MongoClient.connect(url);
+    listDatabases(dbClient)
     console.log(`server is running on port${port}`);
 })
 
 app.get('/', function (req, res) {
     res.send('hello world')
 })
-app.get('/customers', function (req, res) {
-    res.send(customers)
+app.get('/customers', async function  (req, res) {
+    let collectionData=await dbClient.db('forms').collection('customers').find().toArray();
+    res.send(collectionData)
 })
 app.get('/deletedCustomers', function (req, res) {
     res.send(deleteCustomers.map((delCust) => delCust[0]))
 })
-//handling post request to server
+//handling post request to
 
 app.post('/', function (req, res) {
     console.log("got post request");
