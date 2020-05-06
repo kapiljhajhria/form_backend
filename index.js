@@ -1,6 +1,10 @@
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 const assert = require('assert');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const salt = "thisIsMySalt"
+
 
 // Connection URL
 const url = 'mongodb+srv://kapil:aspace@cluster0-84mgq.mongodb.net/test?retryWrites=true&w=majority';
@@ -86,6 +90,9 @@ app.post('/signup', async function (req, res) {
         email: req.body.email,
         password: req.body.pswd,
     }
+    //lets hash the password
+    userSignUpDetails.password = await bcrypt.hash(req.body.pswd, saltRounds,);
+    console.log(userSignUpDetails)
     let result = await dbClient.db('forms').collection('users').insertOne(userSignUpDetails);
     console.log("printing result.ops[0]")
     console.log(result.ops[0].email)
