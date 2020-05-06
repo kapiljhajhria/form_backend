@@ -84,12 +84,22 @@ app.post('/', async function (req, res) {
     res.send(result.ops[0])
 })
 app.post('/signup', async function (req, res) {
-    console.log("got user request to login");
+    console.log("got user request to signup");
     console.log(req.body);
     let userSignUpDetails = {
         email: req.body.email,
         password: req.body.pswd,
     }
+    //lets query the database to see if the email id exist in database or not
+    let searchResult = await dbClient.db('forms').collection('users').findOne({"email": userSignUpDetails.email})
+    console.log("search result for email id")
+    console.log(searchResult);
+    if(searchResult!==null){
+        res.send({"result": "duplicateEmail"})
+        return;
+    }
+
+    console.log("------------------")
     //lets hash the password
     userSignUpDetails.password = await bcrypt.hash(req.body.pswd, saltRounds,);
     console.log(userSignUpDetails)
@@ -97,9 +107,9 @@ app.post('/signup', async function (req, res) {
     console.log("printing result.ops[0]")
     console.log(result.ops[0].email)
     if (result.ops[0].email === req.body.email)
-        res.send({"successful": true})
+        res.send({"result": "success"})
     else
-        res.send({"successful": false})
+        res.send({"result": "failed"})
 })
 app.post('/deleteCustomer', async function (req, res) {
     console.log("got post request to delete customer : " + req.body.customerID);
