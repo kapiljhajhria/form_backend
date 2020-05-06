@@ -94,7 +94,7 @@ app.post('/signup', async function (req, res) {
     let searchResult = await dbClient.db('forms').collection('users').findOne({"email": userSignUpDetails.email})
     console.log("search result for email id")
     console.log(searchResult);
-    if(searchResult!==null){
+    if (searchResult !== null) {
         res.send({"result": "duplicateEmail"})
         return;
     }
@@ -110,6 +110,40 @@ app.post('/signup', async function (req, res) {
         res.send({"result": "success"})
     else
         res.send({"result": "failed"})
+})
+
+
+app.post('/login', async function (req, res) {
+    console.log("got user request to login");
+    console.log(req.body);
+    let logInUserDetails = {
+        email: req.body.email,
+        password: req.body.pswd,
+    }
+    console.log(logInUserDetails)
+    //lets query the database to see if the email id exist in database or not
+    let searchResult = await dbClient.db('forms').collection('users').findOne({"email": logInUserDetails.email})
+    console.log("search result for email id")
+    console.log(searchResult);
+    if (searchResult === null) {
+        //email id doesn't exist, user needs to create account before signing in
+        res.send({"result": "noEmail"})
+        return;
+    }
+
+    console.log("------------------")
+    console.log("email id exist in databse, lets compare the password now")
+    //lets hash the password
+    let passwordMatch = await bcrypt.compare(logInUserDetails.password, searchResult.password,);
+    if (passwordMatch) {
+        //email id doesn't exist, user needs to create account before signing in
+        res.send({"result": "loggedIn"})
+        return;
+    }else{
+        res.send({"result": "passwordError"})
+        return;
+    }
+
 })
 app.post('/deleteCustomer', async function (req, res) {
     console.log("got post request to delete customer : " + req.body.customerID);
