@@ -5,11 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "nodemonrun": "clear && nodemon index.js"
+    "nodemonrun": "nodemon index.js"
   },
   "keywords": [],
   "nodemonConfig": {
-    "ignore": ["test/*", "docs/*"],
+    "ignore": [
+      "test/*",
+      "docs/*"
+    ],
     "delay": "2500"
   },
   "author": "",
