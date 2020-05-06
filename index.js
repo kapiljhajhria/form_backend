@@ -4,7 +4,7 @@ const assert = require('assert');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const salt = "thisIsMySalt"
-
+const cookieSession = require('cookie-session')
 
 // Connection URL
 const url = 'mongodb+srv://kapil:aspace@cluster0-84mgq.mongodb.net/test?retryWrites=true&w=majority';
@@ -40,15 +40,23 @@ customer = {
 let customers = [];
 let deleteCustomers = [];
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header(
+
         "Access-Control-Allow-Headers",
         "Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method"
     );
     res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
     res.header("Allow", "GET, POST, OPTIONS, PUT, DELETE");
+    res.header('Access-Control-Allow-Credentials','true');
     next();
 });
+
+app.use(cookieSession({
+    name: "forms-login",
+    secret: "formsLoginKey",
+    maxAge: 24 * 60 * 60 * 1000,
+}))
 
 
 app.listen(port, async () => {
@@ -125,12 +133,15 @@ app.post('/login', async function (req, res) {
     let searchResult = await dbClient.db('forms').collection('users').findOne({"email": logInUserDetails.email})
     console.log("search result for email id")
     console.log(searchResult);
+
+
+
     if (searchResult === null) {
         //email id doesn't exist, user needs to create account before signing in
         res.send({"result": "noEmail"})
         return;
     }
-
+    req.session.userId=searchResult._id;
     console.log("------------------")
     console.log("email id exist in databse, lets compare the password now")
     //lets hash the password
@@ -139,7 +150,7 @@ app.post('/login', async function (req, res) {
         //email id doesn't exist, user needs to create account before signing in
         res.send({"result": "loggedIn"})
         return;
-    }else{
+    } else {
         res.send({"result": "passwordError"})
         return;
     }
