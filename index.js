@@ -75,7 +75,10 @@ app.get('/customers', async function (req, res) {
 
     }
 
-    let collectionData = await dbClient.db('forms').collection('customers').find({"active": true}).toArray();
+    let collectionData = await dbClient.db('forms').collection('customers').find({
+        "active": true,
+        owner: req.session.userId
+    }).toArray();
     res.send(collectionData)
 })
 
@@ -84,13 +87,15 @@ app.get('/customers', async function (req, res) {
 app.post('/', async function (req, res) {
     console.log("got post request");
     console.log(req.body);
+    console.log("user trying to add data to table, user id is" + req.session.userId)
     let tempcustomerID = Math.floor((Math.random() * 100) + 4000);
     let tempCust = {
         active: true,
         name: req.body.name,
         contact: req.body.contact,
         gender: req.body.gender,
-        customerID: tempcustomerID
+        customerID: tempcustomerID,
+        owner:req.session.userId
     }
     customers.push(tempCust);
     let result = await dbClient.db('forms').collection('customers').insertOne(tempCust);
@@ -184,14 +189,18 @@ app.post('/undoDelete', async function (req, res) {
     // }
 })
 
-app.get('/customer/add', function (req, res) {
+app.get('/customer/add', async function (req, res) {
     let tempCust = {
         active: true,
         name: 'ap',
         contact: Math.floor((Math.random() * 100) + 900000),
         gender: 'Male',
-        customerID: Math.floor((Math.random() * 100) + 4000)
+        customerID: Math.floor((Math.random() * 100) + 4000),
+        owner: req.session.userId
     }
+    ///TODO: add customer to mongoDb database
+    let result = await dbClient.db('forms').collection('customers').updateOne({"_id": ObjectId(tempcustomerID)}, {$set: {active: true}});
+
     customers.push(tempCust);
     res.send(tempCust)
 })
