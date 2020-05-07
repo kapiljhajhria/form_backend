@@ -42,13 +42,12 @@ let deleteCustomers = [];
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header(
-
         "Access-Control-Allow-Headers",
         "Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method"
     );
     res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
     res.header("Allow", "GET, POST, OPTIONS, PUT, DELETE");
-    res.header('Access-Control-Allow-Credentials','true');
+    res.header('Access-Control-Allow-Credentials', 'true');
     next();
 });
 
@@ -69,6 +68,13 @@ app.get('/', function (req, res) {
     res.send('hello world')
 })
 app.get('/customers', async function (req, res) {
+    console.log("someone made request to fetch customers list , use id is")
+    console.log(req.session.userId)
+    if (req.session.userId === undefined) {
+        res.status(403).send({"status": "no authorized, log in first"})
+
+    }
+
     let collectionData = await dbClient.db('forms').collection('customers').find({"active": true}).toArray();
     res.send(collectionData)
 })
@@ -135,13 +141,12 @@ app.post('/login', async function (req, res) {
     console.log(searchResult);
 
 
-
     if (searchResult === null) {
         //email id doesn't exist, user needs to create account before signing in
         res.send({"result": "noEmail"})
         return;
     }
-    req.session.userId=searchResult._id;
+    req.session.userId = searchResult._id;
     console.log("------------------")
     console.log("email id exist in databse, lets compare the password now")
     //lets hash the password
