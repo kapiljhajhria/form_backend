@@ -95,7 +95,7 @@ app.post('/', async function (req, res) {
         contact: req.body.contact,
         gender: req.body.gender,
         customerID: tempcustomerID,
-        owner:req.session.userId
+        owner: req.session.userId
     }
     customers.push(tempCust);
     let result = await dbClient.db('forms').collection('customers').insertOne(tempCust);
@@ -222,4 +222,11 @@ app.get('/customer/delete/:id', function (req, res) {
         res.send({status: "Not Deleted", customerId: customerID})
     }
 
+})
+
+app.post('/logout', async function (req, res) {
+    console.log("logging out user : " + req.session.userId);
+    console.log(req.body);
+    req.session = null;
+    res.send({status: "loggedOut",})
 })
