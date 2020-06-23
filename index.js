@@ -182,11 +182,12 @@ app.post('/undoDelete', async function (req, res) {
     console.log(req.body);
     let tempcustomerID = req.body.customerID;
     let result = await dbClient.db('forms').collection('customers').updateOne({"_id": ObjectId(tempcustomerID)}, {$set: {active: true}});
-    // if (custData.length !== 0) {
-    //     res.send({status: 'Found', deletedCustomer: custData[0], deletedCustomerIndex: custData[1]})
-    // } else {
-    //     res.send({status: "notFound",})
-    // }
+    console.log("result of undo is ",result)
+    if (result.result.modifiedCount !== 0) {
+        res.send({status: 'Found',deletedCustomerId:tempcustomerID})
+    } else {
+        res.send({status: "notFound"})
+    }
 })
 
 app.get('/customer/add', async function (req, res) {
