@@ -1,0 +1,7 @@
+const config = require("config");
+
+module.exports = function () {
+  if (!config.get("crm_jwtPrivateKey")) {
+    throw new Error("FATAL crm_jwtPrivateKey is not defined");
+  }
+};
