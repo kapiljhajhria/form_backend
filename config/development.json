@@ -1,1 +1,1 @@
-{ "jwtPrivateKey": "crm_jwtPrivateKeyDev", "db": "mongodb://localhost/crm" }
+{ "crm_jwtPrivateKey": "crm_jwtPrivateKeyDev", "db": "mongodb://localhost/crm" }
