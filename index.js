@@ -1,5 +1,3 @@
-// const serverless = require("serverless-http");
-var serverless = require('serverless-http');
 const express = require("express");
 const winston = require("winston");
 
@@ -15,11 +13,11 @@ require("./startup/config")(); //check for config values or env values. if not f
 require("./startup/validation")(); //Joi related statements req for api endpoint events validation
 
 const port = process.env.PORT || 3000;
-const server = app.listen(port, () =>
+if(!(process.env.NODE_ENV && process.env.NODE_ENV==='production')){
+  const server = app.listen(port, () =>
   winston.info(`Listening on port ${port}...`)
 );
+}
 
 module.exports = app;
-module.exports = server;
 
-module.exports.handler = serverless(app);
