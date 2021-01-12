@@ -1,4 +1,3 @@
-"use strict";
 var serverless = require('serverless-http');
 
 const { app } = require("./index");
