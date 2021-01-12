@@ -1,2 +1,6 @@
 .idea
 node_modules
+.serverless/cloudformation-template-create-stack.json
+.serverless/cloudformation-template-update-stack.json
+.serverless/crm-app.zip
+.serverless/serverless-state.json
