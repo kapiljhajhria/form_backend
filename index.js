@@ -1,4 +1,5 @@
 // const serverless = require("serverless-http");
+var serverless = require('serverless-http');
 const express = require("express");
 const winston = require("winston");
 
@@ -20,4 +21,5 @@ const server = app.listen(port, () =>
 
 module.exports = app;
 module.exports = server;
-// module.exports.handler = serverless(app);
+
+module.exports.handler = serverless(app);
