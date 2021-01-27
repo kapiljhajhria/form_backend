@@ -11,7 +11,7 @@ API link : https://u39h9e73d2.execute-api.us-east-1.amazonaws.com/production/api
 ## Customers
 
 GET  /customers/  
-POST /customers/ 
+POST /customers/
 DELETE /customers/:id 
 
 ## Users
